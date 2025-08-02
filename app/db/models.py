@@ -1,3 +1,5 @@
+# /app/db/models.py
+
 from sqlalchemy import Column, String, Text, DateTime, JSON, Float
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import declarative_base
@@ -13,9 +15,8 @@ class Document(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     content = Column(Text, nullable=False)
-    # Giả sử bạn dùng embedding của Google có 768 chiều
     embedding = Column(Vector(768))
-    metadata = Column(JSON)
+    doc_metadata = Column(JSON)  # <--- SỬA THÀNH TÊN NÀY
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -25,7 +26,7 @@ class AuditLog(Base):
     chat_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     question = Column(Text, nullable=False)
     response = Column(Text, nullable=False)
-    retrieved_docs = Column(JSON)  # Lưu danh sách các document đã lấy
+    retrieved_docs = Column(JSON)
     latency_ms = Column(Float, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
     feedback = Column(Text, nullable=True)

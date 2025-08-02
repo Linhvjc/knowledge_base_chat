@@ -1,0 +1,43 @@
+services:
+  # Định nghĩa service cho API FastAPI
+  api:
+    build:
+      context: .  # Build image từ Dockerfile trong thư mục hiện tại
+      dockerfile: Dockerfile
+    ports:
+      # Map cổng 8000 của máy host tới cổng 8000 của container
+      # -> Bạn sẽ truy cập API qua http://localhost:8000
+      - "8000:8000"
+    volumes:
+      # Mount thư mục ./app của máy host vào /code/app trong container
+      # -> Mọi thay đổi trong code của bạn sẽ được cập nhật ngay lập tức vào container
+      - ./app:/code/app
+    env_file:
+      # Nạp các biến môi trường từ file .env
+      - ./.env
+    depends_on:
+      # Đảm bảo service 'db' được khởi động trước service 'api'
+      - db
+
+  # Định nghĩa service cho Database PostgreSQL
+  db:
+    # Sử dụng image chính thức có cài sẵn pgvector
+    image: pgvector/pgvector:pg16
+    environment:
+      # Các biến môi trường này dùng để khởi tạo database
+      # Chúng phải khớp với những gì bạn định nghĩa trong DATABASE_URL trong file .env
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: knowledge_base_db
+    ports:
+      # Map cổng 5433 của máy host tới cổng 5432 của container
+      # -> Tránh xung đột nếu bạn có PostgreSQL chạy sẵn ở cổng 5432 trên máy
+      - "5433:5432"
+    volumes:
+      # Sử dụng một volume có tên là 'postgres_data' để lưu trữ dữ liệu database
+      # -> Dữ liệu sẽ không bị mất ngay cả khi bạn xóa và tạo lại container
+      - postgres_data:/var/lib/postgresql/data
+
+# Định nghĩa các volume được sử dụng ở trên
+volumes:
+  postgres_data:
