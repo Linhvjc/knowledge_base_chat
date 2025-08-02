@@ -1,0 +1,19 @@
+# FastAPI
+fastapi
+uvicorn[standard]
+
+# Database
+sqlalchemy
+psycopg2-binary  # Driver cho PostgreSQL
+asyncpg          # Driver bất đồng bộ cho PostgreSQL
+pgvector         # Client library cho pgvector
+
+# LangChain & Google Gemini
+langchain
+langgraph
+langchain-google-genai
+langchain-community # Cần cho một số integration
+
+# Khác
+pydantic-settings  # Để quản lý config từ env vars
+python-dotenv
