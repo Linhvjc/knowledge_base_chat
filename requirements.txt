@@ -13,6 +13,7 @@ langchain
 langgraph
 langchain-google-genai
 langchain-community # Cần cho một số integration
+google-generativeai
 
 # Khác
 pydantic-settings  # Để quản lý config từ env vars

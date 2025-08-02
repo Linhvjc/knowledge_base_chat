@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 
-# Xóa comment ở các dòng import và router mà chúng ta đã chuẩn bị ở bước 1
-# from .api import endpoints  # Chúng ta sẽ dùng nó ở bước sau
-from .db.session import create_tables_on_startup
+# Xóa comment ở dòng import endpoints
+from app.api import endpoints
+from app.db.session import create_tables_on_startup
 
 app = FastAPI(
     title="Knowledge Base AI System",
@@ -13,15 +13,13 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def on_startup():
-    """
-    Hàm này được gọi một lần duy nhất khi ứng dụng FastAPI khởi động.
-    """
     print("Application is starting up...")
     await create_tables_on_startup()
     print("Application startup is complete.")
 
 
-# app.include_router(endpoints.router, prefix="/api/v1") # Vẫn comment dòng này
+# Xóa comment ở dòng này và thêm prefix
+app.include_router(endpoints.router)
 
 
 @app.get("/health", tags=["Health Check"])
