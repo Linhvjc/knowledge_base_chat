@@ -85,7 +85,8 @@ Question:
     messages_to_llm = [
         SystemMessage(
             content='You are a helpful AI assistant, chatting and '
-            'answering questions based on the information provided.',
+            'answering questions based on the information provided. '
+            'Your output must be in English.',
         ),
         *history_messages,
         HumanMessage(content=final_prompt_text),

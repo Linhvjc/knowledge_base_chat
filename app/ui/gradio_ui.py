@@ -39,7 +39,7 @@ async def handle_chat_interaction(
                         yield history_tuples
 
     except Exception as e:
-        history_tuples[-1][1] = f'Đã xảy ra lỗi: {str(e)}'
+        history_tuples[-1][1] = f'Error: {str(e)}'
         yield history_tuples
 
 

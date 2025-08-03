@@ -1,4 +1,4 @@
-# Interview Project: Interactive RAG Knowledge Base AI System
+# Interactive RAG Knowledge Base AI System
 
 This project is a comprehensive Question & Answering (Q&A) system built on a Retrieval-Augmented Generation (RAG) architecture. It allows users to ingest documents, ask context-aware questions based on that knowledge, and receive intelligent, conversational answers from an AI.
 
@@ -8,7 +8,7 @@ The entire system is containerized using Docker and features an intuitive web in
 
 Once launched, the interactive web interface is available at: **[http://localhost:8000/ui](http://localhost:8000/ui)**
 
-![Gradio UI Demo](https://iili.io/F4o4wAv.png)
+**[DEMO VIDEO](https://drive.google.com/file/d/1are_FDtHUfu7EGv8wZOnNfAvYxDjsOtu/view?usp=sharing)**
 
 ## Key Features
 
