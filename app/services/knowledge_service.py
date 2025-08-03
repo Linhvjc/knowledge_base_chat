@@ -85,6 +85,16 @@ class KnowledgeService:
             for doc in documents
         ]
 
+    async def delete_all_documents(self, db: AsyncSession) -> int:
+        """
+        Xóa TẤT CẢ các document khỏi cơ sở tri thức.
+        Trả về số lượng bản ghi đã bị xóa.
+        """
+        result = await db.execute(delete(Document))
+        await db.commit()
+        # rowcount chứa số lượng hàng đã bị ảnh hưởng (bị xóa)
+        return result.rowcount
+
 
 # Tạo một instance duy nhất để sử dụng trong toàn ứng dụng
 knowledge_service = KnowledgeService()

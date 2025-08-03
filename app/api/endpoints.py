@@ -76,6 +76,21 @@ async def get_knowledge_list(db: AsyncSession = Depends(get_db_session)):
     return documents
 
 
+@router.delete(
+    "/knowledge/all", response_model=GeneralStatusResponse, tags=["Knowledge Base"]
+)
+async def delete_all_knowledge(db: AsyncSession = Depends(get_db_session)):
+    """
+    Xóa TẤT CẢ các document khỏi cơ sở tri thức.
+    Đây là một hành động không thể hoàn tác.
+    """
+    deleted_count = await knowledge_service.delete_all_documents(db)
+    return GeneralStatusResponse(
+        status="success",
+        detail=f"Đã xóa thành công toàn bộ {deleted_count} document chunks.",
+    )
+
+
 @router.post("/chat", tags=["Chat"])
 async def chat_with_knowledge_base(
     request: ChatInput,  # request giờ đã chứa cả question và history
