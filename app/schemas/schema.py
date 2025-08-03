@@ -1,70 +1,51 @@
-# /app/schemas/schema.py
+from __future__ import annotations
 
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any
-from uuid import UUID
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any
+from uuid import UUID
 
-# --- Schemas cho Knowledge Base ---
+from pydantic import BaseModel
 
 
 class DocumentInput(BaseModel):
-    """Schema cho một document đầu vào."""
-
-    # Bạn có thể cung cấp ID nguồn hoặc để trống
     source_id: str | None = None
     content: str
-    metadata: Dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
 
 
 class DocumentUploadRequest(BaseModel):
-    """Schema cho request POST /knowledge/update."""
-
-    documents: List[DocumentInput]
+    documents: list[DocumentInput]
 
 
 class DocumentMetadataOutput(BaseModel):
-    """Schema cho dữ liệu trả về của một document."""
-
     id: UUID
-    # Thêm trường size như yêu cầu, sẽ được tính toán
     size: int
     created_at: datetime
-    doc_metadata: Dict[str, Any] | None
+    doc_metadata: dict[str, Any] | None
 
     class Config:
-        # Cho phép Pydantic làm việc với các đối tượng ORM
         from_attributes = True
 
 
 class GeneralStatusResponse(BaseModel):
-    """Schema cho các phản hồi trạng thái chung."""
 
     status: str
     detail: str | None = None
 
 
-# --- Schemas cho Chat ---
-
-
 class ChatInput(BaseModel):
-    """Schema cho đầu vào của API /chat."""
     question: str
-    # Thêm trường này, mặc định là danh sách rỗng
-    history: List[Dict[str, str]] = []
+    history: list[dict[str, str]] = []
 
 
 class AuditLogOutput(BaseModel):
-    """Schema cho đầu ra của API /audit/{chat_id}."""
-
     chat_id: UUID
     question: str
     response: str
-    retrieved_docs: List[Dict[str, Any]]  # Danh sách các document đã lấy
+    retrieved_docs: list[dict[str, Any]]
     latency_ms: float
     timestamp: datetime
-    feedback: Optional[str] = None
+    feedback: str | None = None
 
     class Config:
         from_attributes = True

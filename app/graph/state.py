@@ -1,15 +1,12 @@
-from typing import List, TypedDict, Dict, Any
-from typing import List, TypedDict, Dict, Any
+from __future__ import annotations
+
+from typing import Any
+from typing import TypedDict
 
 
 class GraphState(TypedDict):
-    """
-    Đại diện cho trạng thái của graph.
-    """
-
     question: str
     context: str
     response: str
-    retrieved_docs: List[Dict[str, Any]]
-    # Thêm trường này để chứa lịch sử hội thoại
-    chat_history: List[Dict[str, str]]
+    retrieved_docs: list[dict[str, Any]]
+    chat_history: list[dict[str, str]]
