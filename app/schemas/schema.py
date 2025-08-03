@@ -50,8 +50,9 @@ class GeneralStatusResponse(BaseModel):
 
 class ChatInput(BaseModel):
     """Schema cho đầu vào của API /chat."""
-
     question: str
+    # Thêm trường này, mặc định là danh sách rỗng
+    history: List[Dict[str, str]] = []
 
 
 class AuditLogOutput(BaseModel):

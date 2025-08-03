@@ -3,6 +3,7 @@ import time
 import uuid
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import AsyncGenerator, List, Dict
 
 from app.db.models import AuditLog
 from app.graph.builder import get_graph_runnable
@@ -10,8 +11,9 @@ from app.schemas.schema import ChatInput
 
 
 class ChatService:
+
     async def stream_chat(
-        self, chat_input: ChatInput, db: AsyncSession
+        self, question: str, history: List[Dict[str, str]], db: AsyncSession
     ) -> AsyncGenerator[str, None]:
         """
         Xử lý chat, stream câu trả lời và ghi nhật ký.
@@ -27,7 +29,7 @@ class ChatService:
         retrieved_docs = []
 
         # Đầu vào ban đầu cho graph
-        initial_input = {"question": chat_input.question}
+        initial_input = {"question": question, "chat_history": history}
 
         # Chạy stream
         async for event in graph.astream(initial_input):
@@ -47,7 +49,7 @@ class ChatService:
 
         audit_log = AuditLog(
             chat_id=chat_id,
-            question=chat_input.question,
+            question=question,
             response=full_response,
             retrieved_docs=retrieved_docs,
             latency_ms=latency_ms,

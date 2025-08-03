@@ -78,13 +78,15 @@ async def get_knowledge_list(db: AsyncSession = Depends(get_db_session)):
 
 @router.post("/chat", tags=["Chat"])
 async def chat_with_knowledge_base(
-    request: ChatInput,
+    request: ChatInput,  # request giờ đã chứa cả question và history
     db: AsyncSession = Depends(get_db_session),
 ):
     """
     Gửi câu hỏi và nhận câu trả lời streaming từ AI.
+    Hỗ trợ multi-turn conversation.
     """
-    generator = chat_service.stream_chat(request, db)
+    # Truyền cả request.question và request.history xuống service
+    generator = chat_service.stream_chat(request.question, request.history, db)
     return StreamingResponse(generator, media_type="text/plain")
 
 

@@ -8,38 +8,53 @@ import asyncio
 API_URL = "http://localhost:8000"
 
 
-async def handle_chat_interaction(message: str, history: List[dict]):
+async def handle_chat_interaction(message: str, history_tuples: List[Tuple[str, str]]):
     """
-    Xử lý tương tác chat, hiển thị từng chữ một.
+    Xử lý tương tác chat multi-turn, chuyển đổi định dạng dữ liệu,
+    VÀ stream từng ký tự.
+
+    Args:
+        message (str): Tin nhắn mới từ người dùng.
+        history_tuples (List[Tuple[str, str]]): Lịch sử ở định dạng Gradio.
     """
-    history.append({"role": "user", "content": message})
-    history.append({"role": "assistant", "content": ""})
+    # 1. Chuyển đổi history từ định dạng của Gradio sang định dạng backend cần.
+    history_for_api = []
+    for user_msg, assistant_msg in history_tuples:
+        history_for_api.append({"role": "user", "content": user_msg})
+        history_for_api.append({"role": "assistant", "content": assistant_msg})
 
-    # Chúng ta không yield ở đây nữa, sẽ yield bên trong vòng lặp
+    # 2. Chuẩn bị payload để gửi đến backend.
+    payload = {"question": message, "history": history_for_api}
 
+    # 3. Cập nhật UI ngay lập tức với câu hỏi của người dùng và
+    #    một placeholder cho câu trả lời của bot.
+    history_tuples.append([message, ""])
+
+    # Bắt đầu stream và điền vào placeholder đó
     try:
         async with httpx.AsyncClient(timeout=None) as client:
             async with client.stream(
-                "POST", f"{API_URL}/chat", json={"question": message}
+                "POST", f"{API_URL}/chat", json=payload
             ) as response:
                 response.raise_for_status()
 
-                # Vòng lặp ngoài: xử lý từng chunk nhận được từ API
+                # === PHẦN SỬA LỖI STREAMING NẰM Ở ĐÂY ===
+                # Lặp qua từng chunk
                 async for chunk in response.aiter_text():
                     if not chunk:
                         continue
-
-                    # Vòng lặp trong: xử lý từng ký tự trong chunk
+                    # Lặp qua từng ký tự trong chunk
                     for char in chunk:
-                        history[-1]["content"] += char
-                        # Thêm một khoảng nghỉ rất nhỏ để tạo hiệu ứng gõ phím mượt mà
-                        # và cho phép trình duyệt có thời gian render.
+                        # Cập nhật tin nhắn của bot với từng ký tự
+                        history_tuples[-1][1] += char
+                        # Thêm độ trễ nhỏ để tạo hiệu ứng mượt mà
                         await asyncio.sleep(0.005)
-                        yield history  # Cập nhật UI sau mỗi ký tự
+                        # Yield để cập nhật UI sau MỖI KÝ TỰ
+                        yield history_tuples
 
     except Exception as e:
-        history[-1]["content"] = f"Lỗi: {str(e)}"
-        yield history
+        history_tuples[-1][1] = f"Đã xảy ra lỗi: {str(e)}"
+        yield history_tuples
 
 
 async def handle_file_upload(file):
@@ -96,15 +111,14 @@ def create_ui():
 
         with gr.Tabs():
             with gr.TabItem("Chatbot"):
+                # KHÔNG CẦN `type="messages"` nữa vì chúng ta đang xử lý định dạng tuple gốc
                 chatbot = gr.Chatbot(
-                    label="Cuộc hội thoại",
-                    height=600,
-                    bubble_full_width=False,
-                    # Thêm dòng này để chuyển sang định dạng mới
-                    type="messages",
+                    label="Cuộc hội thoại", height=600, bubble_full_width=False
                 )
                 msg = gr.Textbox(label="Nhập câu hỏi của bạn ở đây")
                 clear = gr.ClearButton([msg, chatbot])
+
+                # Hàm submit giờ đây sẽ nhận history ở dạng tuples
                 msg.submit(handle_chat_interaction, [msg, chatbot], chatbot)
 
             with gr.TabItem("Quản lý Tri thức"):
