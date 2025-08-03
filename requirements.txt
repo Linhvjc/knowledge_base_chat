@@ -1,22 +1,22 @@
+asyncpg
 # FastAPI
 fastapi
-uvicorn[standard]
-
-# Database
-sqlalchemy
-psycopg2-binary  # Driver cho PostgreSQL
-asyncpg          # Driver bất đồng bộ cho PostgreSQL
-pgvector         # Client library cho pgvector
+google-generativeai
+gradio
+httpx
 
 # LangChain & Google Gemini
 langchain
-langgraph
+langchain-community
 langchain-google-genai
-langchain-community # Cần cho một số integration
-google-generativeai
+langgraph
+pgvector
+psycopg2-binary
 
-# Khác
-pydantic-settings  # Để quản lý config từ env vars
+#Others
+pydantic-settings
 python-dotenv
-gradio
-httpx
+
+# Database
+sqlalchemy
+uvicorn[standard]
